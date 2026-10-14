@@ -8,6 +8,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from typing import Iterable
 
 from django.db import transaction
+from django.db.models import F
 
 from .models import Product, Purchase, PurchaseItem
 
@@ -16,6 +17,10 @@ MIN_DISTINCT_PRODUCTS = 2
 MONEY_STEP = Decimal('0.01')
 
 OrderItems = Iterable[tuple[Product, int]]
+
+
+class OutOfStockError(ValueError):
+    """На складе недостаточно товара для оформления заказа."""
 
 
 @dataclass(frozen=True)
@@ -64,6 +69,7 @@ def create_purchase(person: str, address: str,
     positions = _positions(items)
     if not positions:
         raise ValueError('Заказ должен содержать хотя бы один товар')
+    _reserve_stock(positions)
     summary = calculate_order(positions)
     purchase = Purchase.objects.create(
         person=person, address=address,
@@ -75,3 +81,21 @@ def create_purchase(person: str, address: str,
         for product, quantity in positions
     ])
     return purchase
+
+
+def _reserve_stock(positions: list[tuple[Product, int]]) -> None:
+    """Проверяет остатки и списывает купленное количество со склада.
+    Строки товаров блокируются (select_for_update), чтобы два
+    одновременных заказа не продали один и тот же остаток."""
+    needed: dict[int, int] = {}
+    for product, quantity in positions:
+        needed[product.pk] = needed.get(product.pk, 0) + quantity
+    locked = Product.objects.select_for_update().in_bulk(needed.keys())
+    for pk, quantity in needed.items():
+        product = locked[pk]
+        if product.stock < quantity:
+            raise OutOfStockError(
+                f'Недостаточно товара «{product.name}»: '
+                f'в наличии {product.stock} шт., запрошено {quantity} шт.')
+    for pk, quantity in needed.items():
+        Product.objects.filter(pk=pk).update(stock=F('stock') - quantity)

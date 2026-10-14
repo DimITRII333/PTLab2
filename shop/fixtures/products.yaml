@@ -3,28 +3,34 @@
   fields:
     name: Футболка
     price: 1200
+    stock: 25
 - model: shop.product
   pk: 2
   fields:
     name: Джинсы
     price: 3500
+    stock: 12
 - model: shop.product
   pk: 3
   fields:
     name: Куртка
     price: 8900
+    stock: 5
 - model: shop.product
   pk: 4
   fields:
     name: Свитер
     price: 2700
+    stock: 8
 - model: shop.product
   pk: 5
   fields:
     name: Кроссовки
     price: 5400
+    stock: 0
 - model: shop.product
   pk: 6
   fields:
     name: Шапка
     price: 900
+    stock: 30

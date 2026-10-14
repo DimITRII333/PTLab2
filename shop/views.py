@@ -3,7 +3,8 @@ from django.views.generic.edit import FormView
 
 from .form import PurchaseForm
 from .models import Product
-from .services import DISCOUNT_PERCENT, MIN_DISTINCT_PRODUCTS
+from .services import (DISCOUNT_PERCENT, MIN_DISTINCT_PRODUCTS,
+                       OutOfStockError)
 
 
 def index(request):
@@ -35,6 +36,11 @@ class PurchaseCreate(FormView):
         return context
 
     def form_valid(self, form):
-        purchase = form.save()
+        try:
+            purchase = form.save()
+        except OutOfStockError as error:
+            # остаток успели выкупить, пока покупатель заполнял форму
+            form.add_error(None, str(error))
+            return self.form_invalid(form)
         return render(self.request, 'shop/purchase_done.html',
                       {'purchase': purchase})

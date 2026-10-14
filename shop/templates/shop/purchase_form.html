@@ -21,6 +21,7 @@
                     <tr>
                         <th>Наименование</th>
                         <th>Цена, руб.</th>
+                        <th>В наличии</th>
                         <th style="width: 140px;">Количество</th>
                     </tr>
                 </thead>
@@ -29,6 +30,7 @@
                         <tr>
                             <td>{{ product.name }}</td>
                             <td>{{ product.price }}</td>
+                            <td>{{ product.stock }} шт.</td>
                             <td>
                                 {{ field }}
                                 {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
