@@ -1,21 +1,40 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.generic.edit import CreateView
+from django.shortcuts import get_object_or_404, render
+from django.views.generic.edit import FormView
 
-from .models import Product, Purchase
+from .form import PurchaseForm
+from .models import Product
+from .services import DISCOUNT_PERCENT, MIN_DISTINCT_PRODUCTS
 
-# Create your views here.
+
 def index(request):
-    products = Product.objects.all()
-    context = {'products': products}
+    products = Product.objects.order_by('pk')
+    context = {
+        'products': products,
+        'discount_percent': DISCOUNT_PERCENT,
+        'min_distinct_products': MIN_DISTINCT_PRODUCTS,
+    }
     return render(request, 'shop/index.html', context)
 
 
-class PurchaseCreate(CreateView):
-    model = Purchase
-    fields = ['product', 'person', 'address']
+class PurchaseCreate(FormView):
+    form_class = PurchaseForm
+    template_name = 'shop/purchase_form.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        product_id = self.kwargs.get('product_id')
+        if product_id is not None:
+            kwargs['initial_product_id'] = get_object_or_404(
+                Product, pk=product_id).pk
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['discount_percent'] = DISCOUNT_PERCENT
+        context['min_distinct_products'] = MIN_DISTINCT_PRODUCTS
+        return context
 
     def form_valid(self, form):
-        self.object = form.save()
-        return HttpResponse(f'Спасибо за покупку, {self.object.person}!')
-
+        purchase = form.save()
+        return render(self.request, 'shop/purchase_done.html',
+                      {'purchase': purchase})

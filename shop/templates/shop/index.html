@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Товары</title>
+    <title>Магазин одежды</title>
 </head>
 <body>
     <div>
-        <h3>Список</h3>
+        <h3>Магазин одежды</h3>
+        <p>
+            При одновременной покупке не менее {{ min_distinct_products }} разных товаров
+            скидка {{ discount_percent }}% на всю сумму заказа!
+        </p>
         <table>
             <tr>
                 <td><p>Наименование</p></td>
@@ -17,10 +22,11 @@
                 <tr>
                     <td><p>{{ p.name }}</p></td>
                     <td><p>{{ p.price }}</p></td>
-                    <td><p><a href="/buy/{{ p.id }}">Купить</a></p></td>
+                    <td><p><a href="{% url 'buy' p.id %}">Купить</a></p></td>
                 </tr>
             {% endfor %}
         </table>
+        <p><a href="{% url 'order' %}">Оформить заказ из нескольких товаров</a></p>
     </div>
 </body>
 </html>
