@@ -15,6 +15,7 @@
             <tr>
                 <th>Наименование</th>
                 <th>Цена, руб.</th>
+                <th>Наличие</th>
                 <th></th>
             </tr>
         </thead>
@@ -23,12 +24,23 @@
                 <tr>
                     <td>{{ p.name }}</td>
                     <td>{{ p.price }}</td>
+                    <td>
+                        {% if p.in_stock %}
+                            <span class="badge bg-success">В наличии: {{ p.stock }} шт.</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Нет в наличии</span>
+                        {% endif %}
+                    </td>
                     <td class="text-end">
-                        <a class="btn btn-primary btn-sm" href="{% url 'buy' p.id %}">Купить</a>
+                        {% if p.in_stock %}
+                            <a class="btn btn-primary btn-sm" href="{% url 'buy' p.id %}">Купить</a>
+                        {% else %}
+                            <button class="btn btn-secondary btn-sm" disabled>Купить</button>
+                        {% endif %}
                     </td>
                 </tr>
             {% empty %}
-                <tr><td colspan="3" class="text-muted">Товаров пока нет</td></tr>
+                <tr><td colspan="4" class="text-muted">Товаров пока нет</td></tr>
             {% endfor %}
         </tbody>
     </table>

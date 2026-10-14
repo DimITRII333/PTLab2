@@ -30,7 +30,8 @@ class PurchaseForm(forms.ModelForm):
                     min_value=0,
                     max_value=MAX_QUANTITY,
                     required=False,
-                    initial=1 if product.pk == initial_product_id else 0,
+                    initial=1 if (product.pk == initial_product_id
+                                  and product.in_stock) else 0,
                 )
         # Стили Bootstrap для всех полей формы
         for field in self.fields.values():
@@ -53,9 +54,15 @@ class PurchaseForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        if not any(quantity > 0 for _, quantity in self.get_items()):
+        items = self.get_items()
+        if not any(quantity > 0 for _, quantity in items):
             raise forms.ValidationError(
                 'Выберите хотя бы один товар для покупки.')
+        for product, quantity in items:
+            if quantity > product.stock:
+                self.add_error(
+                    self.quantity_field_name(product),
+                    f'В наличии только {product.stock} шт.')
         return cleaned_data
 
     def save(self, commit=True):
