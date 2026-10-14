@@ -1,15 +1,30 @@
 - model: shop.product
   pk: 1
   fields:
-    name: Стол
-    price: 2000
+    name: Футболка
+    price: 1200
 - model: shop.product
   pk: 2
   fields:
-    name: Стул
-    price: 1000
+    name: Джинсы
+    price: 3500
 - model: shop.product
   pk: 3
   fields:
-    name: Табурет
-    price: 500
+    name: Куртка
+    price: 8900
+- model: shop.product
+  pk: 4
+  fields:
+    name: Свитер
+    price: 2700
+- model: shop.product
+  pk: 5
+  fields:
+    name: Кроссовки
+    price: 5400
+- model: shop.product
+  pk: 6
+  fields:
+    name: Шапка
+    price: 900

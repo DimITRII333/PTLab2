@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Заказ оформлен</title>
+</head>
+<body>
+    <div>
+        <h3>Спасибо за покупку, {{ purchase.person }}!</h3>
+        <p>Заказ №{{ purchase.pk }}, адрес доставки: {{ purchase.address }}</p>
+        <table>
+            <tr>
+                <td><p>Наименование</p></td>
+                <td><p>Цена</p></td>
+                <td><p>Количество</p></td>
+                <td><p>Стоимость</p></td>
+            </tr>
+            {% for item in purchase.items.all %}
+                <tr>
+                    <td><p>{{ item.product.name }}</p></td>
+                    <td><p>{{ item.price }}</p></td>
+                    <td><p>{{ item.quantity }}</p></td>
+                    <td><p>{{ item.cost }}</p></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p>Сумма: {{ purchase.subtotal }}</p>
+        {% if purchase.discount %}
+            <p>Скидка за покупку товаров разного вида: {{ purchase.discount }}</p>
+        {% endif %}
+        <p><b>Итого к оплате: {{ purchase.total }}</b></p>
+        <p><a href="{% url 'index' %}">Вернуться в магазин</a></p>
+    </div>
+</body>
+</html>
