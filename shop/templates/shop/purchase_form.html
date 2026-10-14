@@ -1,46 +1,56 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Покупка</title>
-</head>
-<body>
-    <div>
-        <h3>Покупка</h3>
-        <p>
-            Выберите количество товаров. При покупке не менее {{ min_distinct_products }}
-            разных товаров скидка {{ discount_percent }}% на всю сумму.
-        </p>
-        <form method="post">{% csrf_token %}
-            {{ form.non_field_errors }}
-            <table>
-                <tr>
-                    <td><p>Наименование</p></td>
-                    <td><p>Цена</p></td>
-                    <td><p>Количество</p></td>
-                </tr>
-                {% for product, field in form.quantity_fields %}
-                    <tr>
-                        <td><p>{{ product.name }}</p></td>
-                        <td><p>{{ product.price }}</p></td>
-                        <td>{{ field }} {{ field.errors }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-            <table>
-                <tr>
-                    <td><p>{{ form.person.label }}</p></td>
-                    <td>{{ form.person }} {{ form.person.errors }}</td>
-                </tr>
-                <tr>
-                    <td><p>{{ form.address.label }}:</p></td>
-                    <td>{{ form.address }} {{ form.address.errors }}</td>
-                </tr>
-                <tr><td><input type="submit" value="Отправить" /> </td><td></td></tr>
-            </table>
-        </form>
-        <p><a href="{% url 'index' %}">Назад к списку товаров</a></p>
+{% extends 'shop/base.html' %}
+
+{% block title %}Покупка{% endblock %}
+
+{% block content %}
+    <h3 class="mb-3">Покупка</h3>
+
+    <div class="alert alert-info">
+        Выберите количество товаров. При покупке не менее {{ min_distinct_products }}
+        разных товаров скидка {{ discount_percent }}% на всю сумму.
     </div>
-</body>
-</html>
+
+    <form method="post" class="card shadow-sm">{% csrf_token %}
+        <div class="card-body">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Наименование</th>
+                        <th>Цена, руб.</th>
+                        <th style="width: 140px;">Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product, field in form.quantity_fields %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.price }}</td>
+                            <td>
+                                {{ field }}
+                                {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="mb-3">
+                <label class="form-label">{{ form.person.label }}</label>
+                {{ form.person }}
+                {% if form.person.errors %}<div class="text-danger small">{{ form.person.errors }}</div>{% endif %}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">{{ form.address.label }}:</label>
+                {{ form.address }}
+                {% if form.address.errors %}<div class="text-danger small">{{ form.address.errors }}</div>{% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-success">Отправить</button>
+            <a class="btn btn-link" href="{% url 'index' %}">Назад к списку товаров</a>
+        </div>
+    </form>
+{% endblock %}
