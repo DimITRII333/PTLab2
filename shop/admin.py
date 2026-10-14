@@ -1,6 +1,4 @@
 from django.contrib import admin
-from django.db.models import F
-from django.utils.html import format_html
 
 from .models import Product, Purchase, PurchaseItem
 
@@ -40,32 +38,15 @@ class PurchaseItemInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'stock', 'stock_status')
-    list_editable = ('price', 'stock')
+    list_display = ('name', 'price', 'stock')
     list_filter = (StockFilter,)
     search_fields = ('name',)
     ordering = ('name',)
-    actions = ['add_ten_to_stock']
-
-    @admin.display(description='Статус', ordering='stock')
-    def stock_status(self, product):
-        if product.stock == 0:
-            color, text = 'gray', 'Нет в наличии'
-        elif product.stock <= LOW_STOCK:
-            color, text = 'darkorange', 'Заканчивается'
-        else:
-            color, text = 'green', 'В наличии'
-        return format_html('<b style="color: {}">{}</b>', color, text)
-
-    @admin.action(description='Пополнить склад на 10 шт.')
-    def add_ten_to_stock(self, request, queryset):
-        updated = queryset.update(stock=F('stock') + 10)
-        self.message_user(request, f'Склад пополнен для товаров: {updated}')
 
 
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'person', 'date', 'subtotal', 'discount', 'total')
+    list_display = ('id', 'person', 'date', 'subtotal', 'discount', 'total')
     list_filter = ('date',)
     search_fields = ('person', 'address')
     inlines = [PurchaseItemInline]

@@ -30,14 +30,14 @@ class Purchase(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
-    person = models.CharField(max_length=200)
-    address = models.CharField(max_length=200)
-    date = models.DateTimeField(auto_now_add=True)
-    subtotal = models.DecimalField(max_digits=12, decimal_places=2,
+    person = models.CharField('Покупатель', max_length=200)
+    address = models.CharField('Адрес доставки', max_length=200)
+    date = models.DateTimeField('Дата', auto_now_add=True)
+    subtotal = models.DecimalField('Сумма', max_digits=12, decimal_places=2,
                                    default=Decimal('0'))
-    discount = models.DecimalField(max_digits=12, decimal_places=2,
+    discount = models.DecimalField('Скидка', max_digits=12, decimal_places=2,
                                    default=Decimal('0'))
-    total = models.DecimalField(max_digits=12, decimal_places=2,
+    total = models.DecimalField('Итого', max_digits=12, decimal_places=2,
                                 default=Decimal('0'))
 
     def __str__(self):
@@ -53,9 +53,10 @@ class PurchaseItem(models.Model):
 
     purchase = models.ForeignKey(Purchase, on_delete=models.CASCADE,
                                  related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    quantity = models.PositiveIntegerField()
-    price = models.PositiveIntegerField()
+    product = models.ForeignKey(Product, on_delete=models.PROTECT,
+                                verbose_name='Товар')
+    quantity = models.PositiveIntegerField('Количество')
+    price = models.PositiveIntegerField('Цена, руб.')
 
     @property
     def cost(self):
