@@ -32,6 +32,9 @@ class PurchaseForm(forms.ModelForm):
                     required=False,
                     initial=1 if product.pk == initial_product_id else 0,
                 )
+        # Стили Bootstrap для всех полей формы
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
 
     @staticmethod
     def quantity_field_name(product):

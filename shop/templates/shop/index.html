@@ -1,32 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Магазин одежды</title>
-</head>
-<body>
-    <div>
-        <h3>Магазин одежды</h3>
-        <p>
-            При одновременной покупке не менее {{ min_distinct_products }} разных товаров
-            скидка {{ discount_percent }}% на всю сумму заказа!
-        </p>
-        <table>
+{% extends 'shop/base.html' %}
+
+{% block title %}Товары{% endblock %}
+
+{% block content %}
+    <h3 class="mb-3">Список товаров</h3>
+
+    <div class="alert alert-success">
+        При одновременной покупке не менее {{ min_distinct_products }} разных товаров
+        скидка {{ discount_percent }}% на всю сумму заказа!
+    </div>
+
+    <table class="table table-hover bg-white shadow-sm align-middle">
+        <thead class="table-light">
             <tr>
-                <td><p>Наименование</p></td>
-                <td><p>Цена</p></td>
-                <td></td>
+                <th>Наименование</th>
+                <th>Цена, руб.</th>
+                <th></th>
             </tr>
+        </thead>
+        <tbody>
             {% for p in products %}
                 <tr>
-                    <td><p>{{ p.name }}</p></td>
-                    <td><p>{{ p.price }}</p></td>
-                    <td><p><a href="{% url 'buy' p.id %}">Купить</a></p></td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.price }}</td>
+                    <td class="text-end">
+                        <a class="btn btn-primary btn-sm" href="{% url 'buy' p.id %}">Купить</a>
+                    </td>
                 </tr>
+            {% empty %}
+                <tr><td colspan="3" class="text-muted">Товаров пока нет</td></tr>
             {% endfor %}
-        </table>
-        <p><a href="{% url 'order' %}">Оформить заказ из нескольких товаров</a></p>
-    </div>
-</body>
-</html>
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{% url 'order' %}">Оформить заказ из нескольких товаров</a>
+{% endblock %}
